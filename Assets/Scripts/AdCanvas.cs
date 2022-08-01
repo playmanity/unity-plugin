@@ -9,7 +9,7 @@ public class AdCanvas : MonoBehaviour
 {
     public RawImage AdImage;
     public VideoPlayer Player;
-	public GameObject CloseButton;
+	public GameObject CloseButton, TryAgainButton;
 	public RenderTexture VideoTexture;
 
 	string Key;
@@ -22,31 +22,34 @@ public class AdCanvas : MonoBehaviour
 		AdImage.gameObject.SetActive(false);
 		Player.gameObject.SetActive(false);
 		CloseButton.SetActive(false);
+		TryAgainButton.SetActive(false);
 		VideoTexture.Release();
 	}
 
 	public void ShowVideo(string url) 
 	{
-		Debug.Log($"Video: {url}");
+		// Debug.Log($"Video: {url}");
+		TryAgainButton.SetActive(false);
 		VideoTexture.Release();
 		Player.url = url;
-
 		Player.gameObject.SetActive(true);
 		Player.Play();
 		Player.loopPointReached += VideoEnd;
-		Player.errorReceived += VideoEnd;
+		Player.errorReceived += VideoError;
 
 	}
 
 	public void ShowImage(string url)
 	{
 		Debug.Log($"Image: {url}");
+		TryAgainButton.SetActive(false);
 		StartCoroutine(DownloadImage(url));
 	}
 
-	void VideoEnd(VideoPlayer source, string message)
+	void VideoError(VideoPlayer source, string message) 
 	{
-		CloseButton.SetActive(true);
+		TryAgainButton.SetActive(true);
+		TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(source.url); });
 	}
 
 	void VideoEnd(UnityEngine.Video.VideoPlayer vp)
@@ -62,7 +65,8 @@ public class AdCanvas : MonoBehaviour
 		if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
 		{
 			Debug.Log(request.error);
-			CloseButton.SetActive(true);
+			TryAgainButton.SetActive(true);
+			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(MediaUrl); });
 		}
 		else 
 		{
