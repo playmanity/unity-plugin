@@ -88,7 +88,7 @@ public class ApiHandler : MonoBehaviour
             {
                 LoginResult.text = "Logged in!";
                 LoginSuccess Key = JsonUtility.FromJson<LoginSuccess>(www.downloadHandler.text);
-                PlayerPrefs.SetString("APIKey", Key.value);
+                PlayerPrefs.SetString("PlaymanityAPIKey", Key.value);
                 // 1 because this scene takes the 0 spot
                 yield return new WaitForSeconds(0.5f);
                 SceneManager.LoadScene(1);
