@@ -16,17 +16,17 @@ public class AdHandler : MonoBehaviour
         AdPrefab = Resources.Load<GameObject>("Playmanity Ad Canvas");
 	}
 
-	public void ShowVideoAd() 
+	public void ShowVideoAd()
     {
         StartCoroutine(GetVideoUrl());
     }
 
-    public void ShowImageAd() 
+    public void ShowImageAd()
     {
         StartCoroutine(GetImageUrl());
     }
 
-    class MediaAd 
+    class MediaAd
     {
         public string id;
         public string url;
@@ -34,7 +34,7 @@ public class AdHandler : MonoBehaviour
 
     IEnumerator GetVideoUrl()
     {
-        if (Canvas) 
+        if (Canvas)
         {
             Destroy(Canvas.gameObject);
         }
@@ -45,7 +45,6 @@ public class AdHandler : MonoBehaviour
         if (key.Length == 0)
         {
             Debug.LogError("Missing Playmanity api key");
-
         }
 
         using (UnityWebRequest req = UnityWebRequest.Get("https://api.playmanity.com/ads/watch?type=2"))
@@ -67,7 +66,7 @@ public class AdHandler : MonoBehaviour
         }
     }
 
-    IEnumerator GetImageUrl() 
+    IEnumerator GetImageUrl()
     {
         if (Canvas)
         {
@@ -79,7 +78,7 @@ public class AdHandler : MonoBehaviour
         Canvas.Key = key;
         if (key.Length == 0)
         {
-            Debug.LogError("Missing Playmanity api key"); 
+            Debug.LogError("Missing Playmanity api key");
         }
 
         using (UnityWebRequest req = UnityWebRequest.Get("https://api.playmanity.com/ads/watch?type=1"))
