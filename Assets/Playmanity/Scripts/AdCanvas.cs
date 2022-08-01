@@ -11,9 +11,8 @@ public class AdCanvas : MonoBehaviour
     public VideoPlayer Player;
 	public GameObject CloseButton, TryAgainButton;
 	public RenderTexture VideoTexture;
-
-	string Key;
-
+	public string Key;
+	string Id;
 	RawImage img;
 
 	public void Start()
@@ -26,9 +25,10 @@ public class AdCanvas : MonoBehaviour
 		VideoTexture.Release();
 	}
 
-	public void ShowVideo(string url) 
+	public void ShowVideo(string id, string url) 
 	{
 		// Debug.Log($"Video: {url}");
+		Id = id;
 		TryAgainButton.SetActive(false);
 		VideoTexture.Release();
 		Player.url = url;
@@ -39,9 +39,10 @@ public class AdCanvas : MonoBehaviour
 
 	}
 
-	public void ShowImage(string url)
+	public void ShowImage(string id, string url)
 	{
 		Debug.Log($"Image: {url}");
+		Id = id;
 		TryAgainButton.SetActive(false);
 		StartCoroutine(DownloadImage(url));
 	}
@@ -49,11 +50,13 @@ public class AdCanvas : MonoBehaviour
 	void VideoError(VideoPlayer source, string message) 
 	{
 		TryAgainButton.SetActive(true);
-		TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(source.url); });
+		TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
+		TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Id, source.url); });
 	}
 
 	void VideoEnd(UnityEngine.Video.VideoPlayer vp)
 	{
+		StartCoroutine(Report());
 		CloseButton.SetActive(true);
 	}
 
@@ -66,14 +69,37 @@ public class AdCanvas : MonoBehaviour
 		{
 			Debug.Log(request.error);
 			TryAgainButton.SetActive(true);
-			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(MediaUrl); });
+			TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
+			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Id, MediaUrl); });
 		}
 		else 
 		{
 			AdImage.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
 			AdImage.gameObject.SetActive(true);
 			yield return new WaitForSeconds(5f);
+			StartCoroutine(Report());
 			CloseButton.SetActive(true);
+		}
+	}
+
+	IEnumerator Report() 
+	{
+		using (UnityWebRequest req = UnityWebRequest.Post($"https://api.playmanity.com/ads/{Id}/report", ""))
+		{
+			req.SetRequestHeader("Authorization", Key);
+			while (true) 
+			{
+				yield return req.SendWebRequest();
+				if (req.result != UnityWebRequest.Result.Success)
+				{
+					Debug.LogError(req.error);
+					yield return new WaitForSeconds(1f);
+				}
+				else 
+				{
+					break;
+				}
+			}
 		}
 	}
 

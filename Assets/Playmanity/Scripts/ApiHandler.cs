@@ -5,8 +5,8 @@ using UnityEngine.Networking;
 using TMPro;
 using UnityEditor;
 using System;
-using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
+
 
 public class ApiHandler : MonoBehaviour
 {
@@ -98,6 +98,48 @@ public class ApiHandler : MonoBehaviour
 
 }
 
+
+#if UNITY_EDITOR
+public class PlaymanityMenu
+{
+
+    [MenuItem("Playmanity/Add ad handler")]
+    static void AddAdHandler(MenuCommand menuCommand)
+    {
+        // Create a custom game
+        GameObject go = Resources.Load<UnityEngine.Object>("Playmanity Ad Handler") as GameObject;
+        GameObject newAdHandler = PrefabUtility.InstantiatePrefab(go) as GameObject;
+        // Ensure it gets reparented if this was a context click (otherwise does nothing)
+        // GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+        // Register the creation in the undo system
+        // Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
+        Selection.activeObject = newAdHandler;
+    }
+
+    [MenuItem("Playmanity/Add login scene to build settings")]
+    static void AddLoginScene(MenuCommand menuCommand) 
+    {
+
+        EditorBuildSettingsScene[] newScenes = new EditorBuildSettingsScene[EditorBuildSettings.scenes.Length + 1];
+        string scenePath = AssetDatabase.GetAssetPath(Resources.Load<SceneAsset>("Playmanity Login"));
+        EditorBuildSettingsScene newScene = new EditorBuildSettingsScene(scenePath, true);
+
+        EditorBuildSettings.scenes.CopyTo(newScenes, 1);
+        foreach (EditorBuildSettingsScene scene in newScenes) 
+        {
+            if (scene != null && scene.path == newScene.path) 
+            {
+                Debug.Log("Playmanity login scene is already in the build settings");
+                return;
+            }
+        }
+        newScenes[0] = newScene;
+        EditorBuildSettings.scenes = newScenes;
+        Debug.Log("Playmanity Login scene added");
+    }
+}
+
+#endif
 
 /*
 [CustomEditor(typeof(ApiHandler))]

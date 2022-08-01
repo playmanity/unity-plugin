@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -7,10 +8,15 @@ using UnityEngine.UI;
 public class AdHandler : MonoBehaviour
 {
 
-    public Object AdPrefab;
-    public AdCanvas Canvas;
+    Object AdPrefab;
+    AdCanvas Canvas;
 
-    public void ShowVideoAd() 
+	private void Start()
+	{
+        AdPrefab = Resources.Load<GameObject>("Playmanity Ad Canvas");
+	}
+
+	public void ShowVideoAd() 
     {
         StartCoroutine(GetVideoUrl());
     }
@@ -35,6 +41,7 @@ public class AdHandler : MonoBehaviour
         GameObject Ad = Instantiate(AdPrefab) as GameObject;
         Canvas = Ad.GetComponent<AdCanvas>();
         string key = PlayerPrefs.GetString("PlaymanityAPIKey");
+        Canvas.Key = key;
         if (key.Length == 0)
         {
             Debug.LogError("Missing Playmanity api key");
@@ -49,12 +56,13 @@ public class AdHandler : MonoBehaviour
             {
                 Debug.LogError(req.error);
                 Canvas.TryAgainButton.SetActive(true);
+                Canvas.TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 Canvas.TryAgainButton.GetComponent<Button>().onClick.AddListener(ShowVideoAd);
             }
             else
             {
                 MediaAd ad = JsonUtility.FromJson<MediaAd>(req.downloadHandler.text);
-                Canvas.ShowVideo(ad.url);
+                Canvas.ShowVideo(ad.id, ad.url);
             }
         }
     }
@@ -68,6 +76,7 @@ public class AdHandler : MonoBehaviour
         GameObject Ad = Instantiate(AdPrefab) as GameObject;
         Canvas = Ad.GetComponent<AdCanvas>();
         string key = PlayerPrefs.GetString("PlaymanityAPIKey");
+        Canvas.Key = key;
         if (key.Length == 0)
         {
             Debug.LogError("Missing Playmanity api key"); 
@@ -81,13 +90,17 @@ public class AdHandler : MonoBehaviour
             {
                 Debug.LogError(req.error);
                 Canvas.TryAgainButton.SetActive(true);
+                Canvas.TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 Canvas.TryAgainButton.GetComponent<Button>().onClick.AddListener(ShowImageAd);
             }
             else
             {
                 MediaAd ad = JsonUtility.FromJson<MediaAd>(req.downloadHandler.text);
-                Canvas.ShowImage(ad.url);
+                Canvas.ShowImage(ad.id, ad.url);
             }
         }
     }
 }
+
+
+
