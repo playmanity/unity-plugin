@@ -54,7 +54,7 @@ public class AdCanvas : MonoBehaviour
 	{
 		TryAgainButton.SetActive(true);
 		TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
-		TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Id, source.url); });
+		TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowVideo(Game, Id, source.url); });
 	}
 
 	void VideoEnd(UnityEngine.Video.VideoPlayer vp)
@@ -73,7 +73,7 @@ public class AdCanvas : MonoBehaviour
 			Debug.Log(request.error);
 			TryAgainButton.SetActive(true);
 			TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
-			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Id, MediaUrl); });
+			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Game, Id, MediaUrl); });
 		}
 		else
 		{

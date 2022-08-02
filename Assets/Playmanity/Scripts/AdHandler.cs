@@ -62,7 +62,7 @@ public class AdHandler : MonoBehaviour
             else
             {
                 MediaAd ad = JsonUtility.FromJson<MediaAd>(req.downloadHandler.text);
-                Canvas.ShowVideo(ad.id, ad.url);
+                Canvas.ShowVideo(gameIdentifier, ad.id, ad.url);
             }
         }
     }
@@ -96,7 +96,7 @@ public class AdHandler : MonoBehaviour
             else
             {
                 MediaAd ad = JsonUtility.FromJson<MediaAd>(req.downloadHandler.text);
-                Canvas.ShowImage(ad.id, ad.url);
+                Canvas.ShowImage(gameIdentifier, ad.id, ad.url);
             }
         }
     }
