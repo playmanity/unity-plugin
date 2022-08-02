@@ -13,6 +13,7 @@ public class AdCanvas : MonoBehaviour
 	public RenderTexture VideoTexture;
 	public string Key;
 	string Id;
+	string Game;
 	RawImage img;
 
 	public void Start()
@@ -25,10 +26,11 @@ public class AdCanvas : MonoBehaviour
 		VideoTexture.Release();
 	}
 
-	public void ShowVideo(string id, string url) 
+	public void ShowVideo(string game, string id, string url)
 	{
 		// Debug.Log($"Video: {url}");
 		Id = id;
+		Game = game;
 		TryAgainButton.SetActive(false);
 		VideoTexture.Release();
 		Player.url = url;
@@ -39,15 +41,16 @@ public class AdCanvas : MonoBehaviour
 
 	}
 
-	public void ShowImage(string id, string url)
+	public void ShowImage(string game, string id, string url)
 	{
-		Debug.Log($"Image: {url}");
+		// Debug.Log($"Image: {url}");
 		Id = id;
+		Game = game;
 		TryAgainButton.SetActive(false);
 		StartCoroutine(DownloadImage(url));
 	}
 
-	void VideoError(VideoPlayer source, string message) 
+	void VideoError(VideoPlayer source, string message)
 	{
 		TryAgainButton.SetActive(true);
 		TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -72,7 +75,7 @@ public class AdCanvas : MonoBehaviour
 			TryAgainButton.GetComponent<Button>().onClick.RemoveAllListeners();
 			TryAgainButton.GetComponent<Button>().onClick.AddListener(delegate { ShowImage(Id, MediaUrl); });
 		}
-		else 
+		else
 		{
 			AdImage.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
 			AdImage.gameObject.SetActive(true);
@@ -82,12 +85,12 @@ public class AdCanvas : MonoBehaviour
 		}
 	}
 
-	IEnumerator Report() 
+	IEnumerator Report()
 	{
-		using (UnityWebRequest req = UnityWebRequest.Post($"https://api.playmanity.com/ads/{Id}/report", ""))
+		using (UnityWebRequest req = UnityWebRequest.Post($"https://api.playmanity.com/ads/{Id}/report?game={Game}", ""))
 		{
 			req.SetRequestHeader("Authorization", Key);
-			while (true) 
+			while (true)
 			{
 				yield return req.SendWebRequest();
 				if (req.result != UnityWebRequest.Result.Success)
@@ -95,7 +98,7 @@ public class AdCanvas : MonoBehaviour
 					Debug.LogError(req.error);
 					yield return new WaitForSeconds(1f);
 				}
-				else 
+				else
 				{
 					break;
 				}

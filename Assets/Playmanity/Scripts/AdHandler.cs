@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class AdHandler : MonoBehaviour
 {
 
+    public string gameIdentifier;
     Object AdPrefab;
     AdCanvas Canvas;
 
@@ -47,7 +48,7 @@ public class AdHandler : MonoBehaviour
             Debug.LogError("Missing Playmanity api key");
         }
 
-        using (UnityWebRequest req = UnityWebRequest.Get("https://api.playmanity.com/ads/watch?type=2"))
+        using (UnityWebRequest req = UnityWebRequest.Get($"https://api.playmanity.com/ads/watch?type=2&game={gameIdentifier}"))
         {
             req.SetRequestHeader("Authorization", key);
             yield return req.SendWebRequest();
@@ -81,7 +82,7 @@ public class AdHandler : MonoBehaviour
             Debug.LogError("Missing Playmanity api key");
         }
 
-        using (UnityWebRequest req = UnityWebRequest.Get("https://api.playmanity.com/ads/watch?type=1"))
+        using (UnityWebRequest req = UnityWebRequest.Get($"https://api.playmanity.com/ads/watch?type=1&game={gameIdentifier}"))
         {
             req.SetRequestHeader("Authorization", key);
             yield return req.SendWebRequest();
